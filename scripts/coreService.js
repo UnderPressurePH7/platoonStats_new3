@@ -30,12 +30,6 @@ class CoreService {
       this.isInPlatoon = false;
     }
 
-    // this.reconnectAttempts = 0;
-    // this.baseDelay = 5000;   
-    // this.maxDelay = 20000;     
-
-
-
     this.setupSDKListeners();
     this.eventsCore = new EventEmitter();
     this.loadFromServer();
@@ -88,9 +82,6 @@ class CoreService {
 
   clearState() {
     localStorage.removeItem('gameState');
-    // if (this.ws) {
-    //   this.ws.close();
-    // }
 
     this.BattleStats = {};
     this.PlayersInfo = {};
@@ -100,7 +91,6 @@ class CoreService {
     this.isInPlatoon = false;
 
     this.worker.destroy();
-    // this.setupWebSocket();
   }
 
   initializeBattleStats(arenaId, playerId) {
@@ -745,11 +735,6 @@ class CoreService {
 
   }
 
-  //   cleanup() {
-  //     if (this.ws) {
-  //       this.ws.close();
-  //     }
-  //   }
 }
 
 export default CoreService;
