@@ -219,3 +219,5 @@ class BackgroundWorker {
     }
   }
 }
+
+export default  BackgroundWorker;
