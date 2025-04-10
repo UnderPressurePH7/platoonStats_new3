@@ -42,9 +42,14 @@ class CoreService {
     // this.startWebSocketMonitoring();
     this.isRunning = false;
     this.delay = 300000;
-    this.worker = new BackgroundWorker({
-      delay: 1000,
-      method: this.delayServerDataLoadOtherPlayers.bind(this)
+    const worker = new BackgroundWorker({
+      delay: 5000,
+      method: async () => {
+       this.delayServerDataLoadOtherPlayers();
+      },
+      onSuccess: () => console.log('Success'),
+      onError: (error) => console.error('Error occurred:', error.message),
+      onStop: () => console.log('Worker stopped')
     });
   }
 
