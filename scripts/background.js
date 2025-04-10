@@ -30,10 +30,71 @@ class BackgroundWorker {
 
   initWorker() {
     try {
-      this.worker = new Worker('worker.js');
+      const workerCode = `
+        let isRunning = false;
+        let executionCount = 0;
+
+        function sleep(ms) {
+          return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function startLoop(delay) {
+          while (isRunning) {
+            try {
+              executionCount++;
+              
+              self.postMessage({ 
+                type: 'execute',
+                executionCount 
+              });
+              
+              await sleep(delay);
+            } catch (error) {
+              self.postMessage({ 
+                type: 'error',
+                error: error.message
+              });
+            }
+          }
+        }
+
+        self.onmessage = async (event) => {
+          try {
+            const { type, delay } = event.data;
+            
+            switch (type) {
+              case 'start':
+                isRunning = true;
+                executionCount = 0;
+                await startLoop(delay);
+                break;
+              
+              case 'stop':
+                isRunning = false;
+                self.postMessage({ type: 'stopped' });
+                break;
+                
+              case 'getStats':
+                self.postMessage({
+                  type: 'stats',
+                  executionCount
+                });
+                break;
+            }
+          } catch (error) {
+            self.postMessage({ 
+              type: 'error',
+              error: error.message
+            });
+          }
+        };
+      `;
+
+      const blob = new Blob([workerCode], { type: 'application/javascript' });
+      this.worker = new Worker(URL.createObjectURL(blob));
       
       this.worker.onmessage = async (event) => {
-        const { type, executionCount } = event.data;
+        const { type, executionCount, error } = event.data;
         
         switch (type) {
           case 'execute':
@@ -43,7 +104,7 @@ class BackgroundWorker {
               await this.executeMethod();
               this.config.onSuccess();
             } catch (error) {
-              this.handleError(error);
+              this.handleError(new Error(error.message || 'Method execution failed'));
             }
             break;
             
@@ -52,13 +113,17 @@ class BackgroundWorker {
             this.config.onStop();
             break;
             
+          case 'error':
+            this.handleError(new Error(error || 'Worker error'));
+            break;
+            
           case 'stats':
             return event.data;
         }
       };
 
       this.worker.onerror = (error) => {
-        this.handleError(error);
+        this.handleError(new Error(error.message || 'Worker error'));
         this.stop();
       };
 
@@ -77,7 +142,7 @@ class BackgroundWorker {
 
   handleError(error) {
     this.lastError = error;
-    console.error('Worker error:', error);
+    console.error('Worker error:', error.message);
     this.config.onError(error);
   }
 
@@ -154,5 +219,3 @@ class BackgroundWorker {
     }
   }
 }
-
-export default BackgroundWorker;
