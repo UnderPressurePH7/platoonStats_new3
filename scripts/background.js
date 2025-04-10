@@ -30,7 +30,7 @@ class BackgroundWorker {
 
   initWorker() {
     try {
-      this.worker = new Worker('worker.js');
+      this.worker = new Worker('./worker.js');
       
       this.worker.onmessage = async (event) => {
         const { type, executionCount } = event.data;
@@ -154,3 +154,5 @@ class BackgroundWorker {
     }
   }
 }
+
+export default BackgroundWorker;
