@@ -41,7 +41,7 @@ class CoreService {
     this.loadFromServer();
     this.isRunning = false;
     this.delay = 300000;
-    const worker = new BackgroundWorker({
+    this.worker = new BackgroundWorker({
       delay: 5000,
       method: async () => {
        this.delayServerDataLoadOtherPlayers();
