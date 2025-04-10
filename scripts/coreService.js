@@ -33,8 +33,8 @@ class CoreService {
     this.setupSDKListeners();
     this.eventsCore = new EventEmitter();
     this.loadFromServer();
-    this.isRunning = false;
-    this.delay = 300000;
+
+    this.delay = 60000;
     this.worker = new BackgroundWorker({
       delay: 5000,
       method: async () => {
@@ -492,7 +492,6 @@ class CoreService {
 
   serverDataLoadOtherPlayers() {
     try {
-      this.delay = 300000;
       this.loadFromServerOtherPlayers();
       this.sleep(50);
       this.eventsCore.emit('statsUpdated');
@@ -525,7 +524,7 @@ class CoreService {
   }
 
   delayServerDataLoadOtherPlayers(data) {
-    while (this.isRunning) {
+    while (true) {
       this.sleep(this.delay)
       this.serverDataLoadOtherPlayers();
     }
@@ -572,7 +571,6 @@ class CoreService {
       this.BattleStats[this.curentArenaId].players[this.curentPlayerId].vehicle = this.curentVehicle;
       this.BattleStats[this.curentArenaId].players[this.curentPlayerId].name = this.sdk.data.player.name.value;
 
-      this.isRunning = true;
       this.serverData();
       this.worker.start();
     }
@@ -724,7 +722,6 @@ class CoreService {
         }
       }
     }
-    this.isRunning = false;
     this.warmupServer();
     this.saveState();
     this.getRandomDelay(); // тест
