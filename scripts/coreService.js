@@ -39,7 +39,6 @@ class CoreService {
     this.setupSDKListeners();
     this.eventsCore = new EventEmitter();
     this.loadFromServer();
-    // this.startWebSocketMonitoring();
     this.isRunning = false;
     this.delay = 300000;
     const worker = new BackgroundWorker({
@@ -54,71 +53,6 @@ class CoreService {
   }
 
   
-
-
-  // setupWebSocket() {
-  //   const accessKey = this.getAccessKey();
-  //   if (!accessKey || !this.curentPlayerId) return;
-
-  //   const baseUrl = atob(STATS.WS);
-  //   const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  //   const wsUrl = `${wsProtocol}//${baseUrl}?playerId=${this.curentPlayerId}`;
-
-  //   if (this.ws) {
-  //       this.ws.close();
-  //   }
-
-  //   this.ws = new WebSocket(wsUrl);
-
-  //   this.ws.binaryType = 'arraybuffer';
-
-  //   this.ws.onopen = () => {
-  //       this.reconnectAttempts = 0;
-  //   };
-
-  //   this.ws.onmessage = (event) => {
-  //       try {
-  //           if (event.data instanceof ArrayBuffer) {
-  //               const view = new Uint8Array(event.data);
-  //               const success = view[0] === 1;
-
-  //               if (success) {
-  //                   console.log('Дані успішно збережені');
-  //               } else {
-  //                   console.log('Помилка при збереженні даних');
-  //               }
-  //           }
-  //       } catch (error) {
-  //           console.error('Помилка обробки WebSocket повідомлення:', error);
-  //       }
-  //   };
-
-  //   this.ws.onerror = (error) => {
-  //       console.error('WebSocket помилка:', error);
-  //   };
-
-  //   this.ws.onclose = () => {
-  //       // console.log('WebSocket з'єднання закрито');
-  //   };
-  // }
-
-  // startWebSocketMonitoring() {
-  //   setInterval(() => {
-  //       if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
-  //           const delay = Math.min(
-  //               this.baseDelay * Math.pow(2, this.reconnectAttempts),
-  //               this.maxDelay
-  //           );
-
-  //           setTimeout(() => {
-  //               this.setupWebSocket();
-  //               this.reconnectAttempts++;
-  //           }, delay);
-  //       } else {
-  //           this.reconnectAttempts = 0;
-  //       }
-  //   }, 10000);
-  // }
 
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
